@@ -22,6 +22,7 @@ import { QrGeneratorTool } from './components/security/QrGeneratorTool';
 import { UkSalaryCalculatorTool } from './components/uk/UkSalaryCalculatorTool';
 import { RunningPaceTool } from './components/uk/RunningPaceTool';
 import { ProModal } from './components/ProModal';
+import { LegalModal } from './components/common/LegalModal';
 import { WhyStriidSection } from './components/WhyStriidSection';
 import { FaqSection } from './components/FaqSection';
 import { Footer } from './components/Footer';
@@ -31,6 +32,8 @@ export function App() {
   const [activeCategory, setActiveCategory] = useState<ToolCategory>('pdf');
   const [currentTool, setCurrentTool] = useState<ToolId>('merge');
   const [isProModalOpen, setIsProModalOpen] = useState(false);
+  const [isLegalModalOpen, setIsLegalModalOpen] = useState(false);
+  const [legalTab, setLegalTab] = useState<'privacy' | 'terms'>('privacy');
 
   // Sync hash on initial load e.g. striid.uk/#ai-humanizer
   useEffect(() => {
@@ -59,6 +62,11 @@ export function App() {
     setCurrentTool(id);
     window.location.hash = id;
     window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
+  const handleOpenLegal = (tab: 'privacy' | 'terms') => {
+    setLegalTab(tab);
+    setIsLegalModalOpen(true);
   };
 
   const renderActiveTool = () => {
@@ -157,12 +165,20 @@ export function App() {
       <Footer
         onSelectTool={handleSelectTool}
         onOpenPro={() => setIsProModalOpen(true)}
+        onOpenLegal={handleOpenLegal}
       />
 
       {/* Non-Intrusive Pro Modal */}
       <ProModal
         isOpen={isProModalOpen}
         onClose={() => setIsProModalOpen(false)}
+      />
+
+      {/* Compliance & Legal Modal (Privacy & Terms) */}
+      <LegalModal
+        isOpen={isLegalModalOpen}
+        initialTab={legalTab}
+        onClose={() => setIsLegalModalOpen(false)}
       />
     </div>
   );
