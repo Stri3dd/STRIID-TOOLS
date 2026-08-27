@@ -1,4 +1,4 @@
-﻿import { PDFDocument, degrees, PageSizes } from 'pdf-lib';
+import { PDFDocument, degrees, PageSizes } from 'pdf-lib';
 import * as pdfjsLib from 'pdfjs-dist';
 import type { PageThumbnail } from '../types';
 
@@ -275,52 +275,47 @@ export async function convertImagesToPDF(
 export async function unlockPDF(file: File, password?: string): Promise<Uint8Array> {
   const arrayBuffer = await file.arrayBuffer();
 
-  // Try direct decryption with PDFDocument first
-  try {
-    const pdfDoc = await PDFDocument.load(arrayBuffer, { ignoreEncryption: true });
-    // Re-save without encryption
-    return await pdfDoc.save();
-  } catch {
-    // Fall back to PDF.js password authentication and reconstruction
-    const loadingTask = pdfjsLib.getDocument({
-      data: new Uint8Array(arrayBuffer),
-      password: password || '',
+  // Decrypt using PDF.js cryptographic engine (handles AES-128, AES-256, and RC4)
+  const loadingTask = pdfjsLib.getDocument({
+    data: new Uint8Array(arrayBuffer),
+    password: password || '',
+  });
+
+  const pdf = await loadingTask.promise;
+  const cleanPdf = await PDFDocument.create();
+
+  for (let pageNum = 1; pageNum <= pdf.numPages; pageNum++) {
+    const page = await pdf.getPage(pageNum);
+    const viewport = page.getViewport({ scale: 2.0 });
+    const canvas = document.createElement('canvas');
+    const context = canvas.getContext('2d');
+
+    if (!context) continue;
+
+    canvas.height = viewport.height;
+    canvas.width = viewport.width;
+
+    await (page.render as any)({
+      canvasContext: context,
+      viewport: viewport,
+      canvas: canvas,
+    }).promise;
+
+    const imgDataUrl = canvas.toDataURL('image/jpeg', 0.95);
+    const imgBytes = await (await fetch(imgDataUrl)).arrayBuffer();
+    const embeddedImg = await cleanPdf.embedJpg(imgBytes);
+
+    const origW = Math.abs(page.view[2] - page.view[0]);
+    const origH = Math.abs(page.view[3] - page.view[1]);
+    const cleanPage = cleanPdf.addPage([origW, origH]);
+
+    cleanPage.drawImage(embeddedImg, {
+      x: 0,
+      y: 0,
+      width: origW,
+      height: origH,
     });
-    const pdf = await loadingTask.promise;
-    const cleanPdf = await PDFDocument.create();
-
-    for (let pageNum = 1; pageNum <= pdf.numPages; pageNum++) {
-      const page = await pdf.getPage(pageNum);
-      const viewport = page.getViewport({ scale: 2.0 });
-      const canvas = document.createElement('canvas');
-      const context = canvas.getContext('2d');
-
-      if (!context) continue;
-
-      canvas.height = viewport.height;
-      canvas.width = viewport.width;
-
-      await (page.render as any)({
-        canvasContext: context,
-        viewport: viewport,
-        canvas: canvas,
-      }).promise;
-
-      const imgDataUrl = canvas.toDataURL('image/jpeg', 0.95);
-      const imgBytes = await (await fetch(imgDataUrl)).arrayBuffer();
-      const embeddedImg = await cleanPdf.embedJpg(imgBytes);
-
-      const [origW, origH] = [page.view[2] - page.view[0], page.view[3] - page.view[1]];
-      const cleanPage = cleanPdf.addPage([origW, origH]);
-
-      cleanPage.drawImage(embeddedImg, {
-        x: 0,
-        y: 0,
-        width: origW,
-        height: origH,
-      });
-    }
-
-    return await cleanPdf.save();
   }
+
+  return await cleanPdf.save();
 }
