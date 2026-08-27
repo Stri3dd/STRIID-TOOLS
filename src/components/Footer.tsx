@@ -1,4 +1,4 @@
-﻿import React from 'react';
+import React from 'react';
 import { ShieldCheck, Zap } from 'lucide-react';
 import type { ToolId } from '../types';
 
@@ -51,10 +51,20 @@ export const Footer: React.FC<FooterProps> = ({ onSelectTool, onOpenPro, onOpenL
           </button>
         </div>
 
-        {/* Security / region tag */}
-        <div className="flex items-center gap-2 text-[11px] text-slate-500">
-          <ShieldCheck className="h-4 w-4 text-emerald-400" />
-          <span>Zero Server Uploads • UK GDPR Compliant</span>
+        {/* Security / region tag & Open Source */}
+        <div className="flex flex-wrap items-center justify-center gap-4 text-[11px] text-slate-500">
+          <div className="flex items-center gap-1.5">
+            <ShieldCheck className="h-4 w-4 text-emerald-400" />
+            <span>Zero Server Uploads • UK GDPR Compliant</span>
+          </div>
+          <a
+            href="https://github.com/Stri3dd/STRIID-TOOLS"
+            target="_blank"
+            rel="noreferrer"
+            className="flex items-center gap-1 text-slate-400 hover:text-white transition-colors"
+          >
+            <span>• MIT Open Source</span>
+          </a>
         </div>
       </div>
     </footer>
