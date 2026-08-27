@@ -1,14 +1,21 @@
-﻿import React from 'react';
+import React from 'react';
 import { 
   FileText, 
   Image as ImageIcon, 
   Type, 
   ShieldCheck, 
-  PoundSterling 
+  PoundSterling,
+  Sparkles 
 } from 'lucide-react';
 import type { ToolCategory, CategoryInfo } from '../../types';
 
 export const CATEGORIES: CategoryInfo[] = [
+  {
+    id: 'all',
+    name: 'Home / All Tools',
+    shortDesc: 'Platform overview and tools dashboard',
+    icon: 'Sparkles',
+  },
   {
     id: 'pdf',
     name: 'PDF Suite',
@@ -24,7 +31,7 @@ export const CATEGORIES: CategoryInfo[] = [
   {
     id: 'text',
     name: 'Text & Content',
-    shortDesc: 'Word Count & Case Formatting',
+    shortDesc: 'AI Humanizer & Word Counter',
     icon: 'Type',
   },
   {
@@ -52,12 +59,13 @@ export const CategoryTabs: React.FC<CategoryTabsProps> = ({
 }) => {
   const getIcon = (iconName: string) => {
     switch (iconName) {
+      case 'Sparkles': return <Sparkles className="h-4 w-4" />;
       case 'FileText': return <FileText className="h-4 w-4" />;
       case 'ImageIcon': return <ImageIcon className="h-4 w-4" />;
       case 'Type': return <Type className="h-4 w-4" />;
       case 'ShieldCheck': return <ShieldCheck className="h-4 w-4" />;
       case 'PoundSterling': return <PoundSterling className="h-4 w-4" />;
-      default: return <FileText className="h-4 w-4" />;
+      default: return <Sparkles className="h-4 w-4" />;
     }
   };
 

@@ -8,12 +8,15 @@ interface HeaderProps {
   onOpenPro: () => void;
 }
 
-export const Header: React.FC<HeaderProps> = ({ onOpenPro }) => {
+export const Header: React.FC<HeaderProps> = ({ onSelectTool, onOpenPro }) => {
   return (
     <header className="sticky top-0 z-40 border-b border-slate-800 bg-slate-950/80 backdrop-blur-md">
       <div className="mx-auto flex max-w-7xl items-center justify-between px-4 py-3 sm:px-6">
         {/* Brand Logo */}
-        <a href="#" className="flex items-center gap-2.5 text-left group">
+        <button 
+          onClick={() => onSelectTool('home')}
+          className="flex items-center gap-2.5 text-left group cursor-pointer focus:outline-none"
+        >
           <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-tr from-blue-600 to-indigo-500 shadow-lg shadow-blue-500/25 group-hover:scale-105 transition-transform">
             <Zap className="h-5 w-5 text-white fill-white" />
           </div>
@@ -24,9 +27,9 @@ export const Header: React.FC<HeaderProps> = ({ onOpenPro }) => {
                 .UK
               </span>
             </div>
-            <p className="text-[11px] text-slate-400 font-medium">100% Private PDF Suite</p>
+            <p className="text-[11px] text-slate-400 font-medium">100% Private In-Browser Tools</p>
           </div>
-        </a>
+        </button>
 
         {/* Center Privacy Badge */}
         <div className="hidden md:flex items-center gap-2 rounded-full border border-emerald-500/30 bg-emerald-950/40 px-3.5 py-1.5 text-xs text-emerald-400 shadow-sm">

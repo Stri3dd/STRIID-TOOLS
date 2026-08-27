@@ -1,6 +1,8 @@
-﻿export type ToolCategory = 'pdf' | 'image' | 'text' | 'security' | 'uk-lifestyle';
+﻿export type ToolCategory = 'all' | 'pdf' | 'image' | 'text' | 'security' | 'uk-lifestyle';
 
 export type ToolId = 
+  // Home
+  | 'home'
   // PDF Suite
   | 'merge' 
   | 'split' 
