@@ -1,0 +1,64 @@
+﻿import React from 'react';
+import { ShieldCheck, Zap } from 'lucide-react';
+import type { ToolId } from '../types';
+
+interface FooterProps {
+  onSelectTool: (id: ToolId) => void;
+  onOpenPro: () => void;
+}
+
+export const Footer: React.FC<FooterProps> = ({ onSelectTool, onOpenPro }) => {
+  return (
+    <footer className="border-t border-slate-800 bg-slate-950 py-12 px-4 sm:px-6">
+      <div className="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-6 text-xs text-slate-400">
+        <div className="flex flex-col items-center md:items-start gap-2">
+          <div className="flex items-center gap-2">
+            <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-blue-600 text-white font-bold">
+              <Zap className="h-4 w-4 fill-white" />
+            </div>
+            <span className="font-extrabold text-sm text-white tracking-tight">
+              STRII<span className="text-blue-500">D</span>.UK
+            </span>
+          </div>
+          <p className="text-slate-500 text-[11px] text-center md:text-left">
+            100% In-Browser Client-Side PDF Tools. Built for speed, privacy, and zero bloat.
+          </p>
+        </div>
+
+        {/* Quick links */}
+        <div className="flex flex-wrap items-center justify-center gap-4 text-xs font-medium">
+          <button onClick={() => onSelectTool('merge')} className="hover:text-white transition-colors">
+            Merge PDF
+          </button>
+          <button onClick={() => onSelectTool('split')} className="hover:text-white transition-colors">
+            Split PDF
+          </button>
+          <button onClick={() => onSelectTool('reorder')} className="hover:text-white transition-colors">
+            Rotate & Reorder
+          </button>
+          <button onClick={() => onSelectTool('pdf-to-img')} className="hover:text-white transition-colors">
+            PDF to Images
+          </button>
+          <button onClick={() => onSelectTool('img-to-pdf')} className="hover:text-white transition-colors">
+            Images to PDF
+          </button>
+          <button onClick={() => onSelectTool('protect')} className="hover:text-white transition-colors">
+            Protect PDF
+          </button>
+          <button onClick={() => onSelectTool('unlock')} className="hover:text-white transition-colors">
+            Unlock PDF
+          </button>
+          <button onClick={onOpenPro} className="text-amber-400 font-bold hover:text-amber-300 transition-colors">
+            Striid Pro
+          </button>
+        </div>
+
+        {/* Security / region tag */}
+        <div className="flex items-center gap-2 text-[11px] text-slate-500">
+          <ShieldCheck className="h-4 w-4 text-emerald-400" />
+          <span>Zero Server Uploads • Fast Cloudflare Edge</span>
+        </div>
+      </div>
+    </footer>
+  );
+};

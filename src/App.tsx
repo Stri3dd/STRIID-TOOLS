@@ -1,0 +1,171 @@
+﻿import { useState, useEffect } from 'react';
+import { Header } from './components/Header';
+import { CategoryTabs } from './components/common/CategoryTabs';
+import { ToolNavigation, ALL_TOOLS } from './components/ToolNavigation';
+import { HeroSuiteGrid } from './components/common/HeroSuiteGrid';
+import { MergeTool } from './components/MergeTool';
+import { SplitTool } from './components/SplitTool';
+import { ReorderRotateTool } from './components/ReorderRotateTool';
+import { PdfToImagesTool } from './components/PdfToImagesTool';
+import { ImagesToPdfTool } from './components/ImagesToPdfTool';
+import { ProtectTool } from './components/ProtectTool';
+import { UnlockTool } from './components/UnlockTool';
+import { AiSummaryTool } from './components/AiSummaryTool';
+import { ImageCompressorTool } from './components/image/ImageCompressorTool';
+import { ExifStripperTool } from './components/image/ExifStripperTool';
+import { ColorPaletteTool } from './components/image/ColorPaletteTool';
+import { AiHumanizerTool } from './components/text/AiHumanizerTool';
+import { WordCounterTool } from './components/text/WordCounterTool';
+import { CaseConverterTool } from './components/text/CaseConverterTool';
+import { PasswordGeneratorTool } from './components/security/PasswordGeneratorTool';
+import { QrGeneratorTool } from './components/security/QrGeneratorTool';
+import { UkSalaryCalculatorTool } from './components/uk/UkSalaryCalculatorTool';
+import { RunningPaceTool } from './components/uk/RunningPaceTool';
+import { ProModal } from './components/ProModal';
+import { WhyStriidSection } from './components/WhyStriidSection';
+import { FaqSection } from './components/FaqSection';
+import { Footer } from './components/Footer';
+import type { ToolId, ToolCategory } from './types';
+
+export function App() {
+  const [activeCategory, setActiveCategory] = useState<ToolCategory>('pdf');
+  const [currentTool, setCurrentTool] = useState<ToolId>('merge');
+  const [isProModalOpen, setIsProModalOpen] = useState(false);
+
+  // Sync hash on initial load e.g. striid.uk/#ai-humanizer
+  useEffect(() => {
+    const hash = window.location.hash.replace('#', '') as ToolId;
+    const match = ALL_TOOLS.find((t) => t.id === hash);
+    if (match) {
+      setCurrentTool(match.id);
+      setActiveCategory(match.category);
+    }
+  }, []);
+
+  const handleSelectCategory = (cat: ToolCategory) => {
+    setActiveCategory(cat);
+    const firstToolInCat = ALL_TOOLS.find((t) => t.category === cat);
+    if (firstToolInCat) {
+      setCurrentTool(firstToolInCat.id);
+      window.location.hash = firstToolInCat.id;
+    }
+  };
+
+  const handleSelectTool = (id: ToolId) => {
+    const match = ALL_TOOLS.find((t) => t.id === id);
+    if (match) {
+      setActiveCategory(match.category);
+    }
+    setCurrentTool(id);
+    window.location.hash = id;
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
+  const renderActiveTool = () => {
+    switch (currentTool) {
+      // PDF Suite
+      case 'merge':
+        return <MergeTool />;
+      case 'split':
+        return <SplitTool />;
+      case 'reorder':
+        return <ReorderRotateTool />;
+      case 'pdf-to-img':
+        return <PdfToImagesTool />;
+      case 'img-to-pdf':
+        return <ImagesToPdfTool />;
+      case 'protect':
+        return <ProtectTool />;
+      case 'unlock':
+        return <UnlockTool />;
+      case 'ai-summary':
+        return <AiSummaryTool onOpenPro={() => setIsProModalOpen(true)} />;
+
+      // Image Suite
+      case 'img-compress':
+        return <ImageCompressorTool />;
+      case 'img-exif-strip':
+        return <ExifStripperTool />;
+      case 'img-palette':
+        return <ColorPaletteTool />;
+
+      // Text Suite
+      case 'ai-humanizer':
+        return <AiHumanizerTool onOpenPro={() => setIsProModalOpen(true)} />;
+      case 'word-counter':
+        return <WordCounterTool />;
+      case 'case-converter':
+        return <CaseConverterTool />;
+
+      // Security Suite
+      case 'password-gen':
+        return <PasswordGeneratorTool />;
+      case 'qr-generator':
+        return <QrGeneratorTool />;
+
+      // UK & Lifestyle Suite
+      case 'uk-salary':
+        return <UkSalaryCalculatorTool />;
+      case 'running-pace':
+        return <RunningPaceTool />;
+
+      default:
+        return <MergeTool />;
+    }
+  };
+
+  return (
+    <div className="min-h-screen bg-slate-950 text-slate-100 flex flex-col selection:bg-blue-600 selection:text-white">
+      {/* Top Header */}
+      <Header
+        currentTool={currentTool}
+        onSelectTool={handleSelectTool}
+        onOpenPro={() => setIsProModalOpen(true)}
+      />
+
+      {/* Category Tabs */}
+      <CategoryTabs
+        activeCategory={activeCategory}
+        onSelectCategory={handleSelectCategory}
+      />
+
+      {/* Tool Navigation Tabs within Category */}
+      <ToolNavigation
+        currentTool={currentTool}
+        activeCategory={activeCategory}
+        onSelectTool={handleSelectTool}
+      />
+
+      {/* Main Active Tool View */}
+      <main className="flex-1">
+        {renderActiveTool()}
+
+        {/* Master Suites Grid */}
+        <HeroSuiteGrid
+          onSelectTool={handleSelectTool}
+          onSelectCategory={handleSelectCategory}
+        />
+
+        {/* Comparison & Trust Section */}
+        <WhyStriidSection />
+
+        {/* FAQ Section */}
+        <FaqSection />
+      </main>
+
+      {/* Footer */}
+      <Footer
+        onSelectTool={handleSelectTool}
+        onOpenPro={() => setIsProModalOpen(true)}
+      />
+
+      {/* Non-Intrusive Pro Modal */}
+      <ProModal
+        isOpen={isProModalOpen}
+        onClose={() => setIsProModalOpen(false)}
+      />
+    </div>
+  );
+}
+
+export default App;
